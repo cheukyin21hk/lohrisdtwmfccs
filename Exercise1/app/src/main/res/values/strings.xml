@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Exercise1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title">請輸入正整數 N </string>
+    <string name="buttonTxt">計總 1+2+..+N 之和</string>
+</resources>

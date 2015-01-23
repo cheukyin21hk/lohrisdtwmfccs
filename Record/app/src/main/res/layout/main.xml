@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:baselineAligned="false" 
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:orientation="vertical">
+<TextView
+  android:id="@+id/txtRec"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:text="點選錄音檔名即可播放"
+  android:textSize="20sp" 
+  android:paddingBottom="10dp"/>
+<LinearLayout 
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+  <ImageView
+  android:id="@+id/imgRecord"
+  android:layout_width="50dp"
+  android:layout_height="50dp"  
+  android:src="@drawable/record" />
+  <ImageView
+  android:id="@+id/imgPlay" 
+  android:layout_width="50dp"
+  android:layout_height="50dp"  
+  android:src="@drawable/play" />
+  <ImageView
+  android:id="@+id/imgStop" 
+  android:layout_width="50dp"
+  android:layout_height="50dp"  
+  android:src="@drawable/stop" />  
+  <ImageView
+  android:id="@+id/imgEnd"
+  android:layout_width="50dp"
+  android:layout_height="50dp"  
+  android:src="@drawable/end" />
+</LinearLayout>
+<TextView
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:text="錄音檔清單："
+  android:textSize="20sp" 
+  android:paddingTop="10dp"/>
+<ListView android:id="@+id/lstRec"
+ android:layout_height="wrap_content" 
+ android:layout_width="match_parent" />
+</LinearLayout>
