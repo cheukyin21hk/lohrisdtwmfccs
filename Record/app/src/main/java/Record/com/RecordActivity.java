@@ -25,10 +25,10 @@ public class RecordActivity extends Activity {
 	private TextView txtRec;
 	private MediaPlayer mediaplayer;
 	private MediaRecorder mediarecorder;
-	private String temFile; //¥H¤é´Á®É¶¡°µ¼È¦sÀÉ¦W
+	private String temFile; //ï¿½Hï¿½ï¿½ï¿½ï¿½É¶ï¿½ï¿½ï¿½ï¿½È¦sï¿½É¦W
 	private File recFile, recPATH;
-	private List<String> lstArray=new ArrayList<String>(); //ÀÉ¦W°}¦C
-	private int cListItem=0; //¥Ø«e¼½©ñ¿ý­µ
+	private List<String> lstArray=new ArrayList<String>(); //ï¿½É¦Wï¿½}ï¿½C
+	private int cListItem=0; //ï¿½Ø«eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,10 +46,10 @@ public class RecordActivity extends Activity {
 		imgStop.setOnClickListener(listener);
 		imgEnd.setOnClickListener(listener);
     	lstRec.setOnItemClickListener(lstListener);
-    	recPATH=Environment.getExternalStorageDirectory(); //SD¥d¸ô®|
+    	recPATH=Environment.getExternalStorageDirectory(); //SDï¿½dï¿½ï¿½ï¿½|
     	mediaplayer=new MediaPlayer();
 		imgDisable(imgStop);
-    	recList(); //¿ý­µ¦Cªí
+    	recList(); //ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½
 	}
 
     private ImageView.OnClickListener listener=new ImageView.OnClickListener() {
@@ -57,10 +57,10 @@ public class RecordActivity extends Activity {
         public void onClick(View v) {
           switch(v.getId())
           {
-            case R.id.imgRecord:  //¿ý­µ
+            case R.id.imgRecord:  //ï¿½ï¿½ï¿½ï¿½
 			try {
 				Time t=new Time();
-				t.setToNow(); //¨ú±o²{¦b¤é´Á¤Î®É¶¡
+				t.setToNow(); //ï¿½ï¿½ï¿½oï¿½{ï¿½bï¿½ï¿½ï¿½ï¿½Î®É¶ï¿½
 				temFile="R"+add0(t.year)+add0(t.month+1)+add0(t.monthDay)+add0(t.hour)+add0(t.minute)+add0(t.second);
 				recFile=new File(recPATH + "/" + temFile + ".amr");
 				mediarecorder= new MediaRecorder();
@@ -70,32 +70,32 @@ public class RecordActivity extends Activity {
 				mediarecorder.setOutputFile(recFile.getAbsolutePath());
 				mediarecorder.prepare();
 				mediarecorder.start();
-				txtRec.setText("¥¿¦b¿ý­µ¡K¡K¡K¡K");
-				imgDisable(imgRecord); //³B²z«ö¶s¬O§_¥i«ö
+				txtRec.setText("ï¿½ï¿½ï¿½bï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½Kï¿½Kï¿½K");
+				imgDisable(imgRecord); //ï¿½Bï¿½zï¿½ï¿½ï¿½sï¿½Oï¿½_ï¿½iï¿½ï¿½
 				imgDisable(imgPlay);
 				imgEnable(imgStop);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
             	break;
-            case R.id.imgPlay:  //¼½©ñ
+            case R.id.imgPlay:  //ï¿½ï¿½ï¿½ï¿½
             	playSong(recPATH + "/" + lstArray.get(cListItem).toString());
             	break;
-            case R.id.imgStop:  //°±¤î
-				if (mediaplayer.isPlaying()) { ////°±¤î¼½©ñ
+            case R.id.imgStop:  //ï¿½ï¿½ï¿½ï¿½
+				if (mediaplayer.isPlaying()) { ////ï¿½ï¿½ï¿½î¼½ï¿½ï¿½
 					mediaplayer.reset();
-				} else if(recFile!=null) { //°±¤î¿ý­µ
+				} else if(recFile!=null) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             		mediarecorder.stop();
             		mediarecorder.release();
             		mediarecorder=null;
-    				txtRec.setText("°±¤î" + recFile.getName() + "¿ý­µ¡I");
+    				txtRec.setText("ï¿½ï¿½ï¿½ï¿½" + recFile.getName() + "ï¿½ï¿½ï¿½ï¿½ï¿½I");
     				recList();
             	}
 				imgEnable(imgRecord);
 				imgEnable(imgPlay);
 				imgDisable(imgStop);
                	break;
-            case R.id.imgEnd:  //µ²§ô
+            case R.id.imgEnd:  //ï¿½ï¿½ï¿½ï¿½
             	finish();
               	break;
            }
@@ -105,25 +105,25 @@ public class RecordActivity extends Activity {
     private ListView.OnItemClickListener lstListener=new ListView.OnItemClickListener() {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-			cListItem = position; //¨ú±oÂI¿ï¦ì¸m
-			playSong(recPATH + "/" + lstArray.get(cListItem).toString()); //¼½©ñ¿ý­µ
+			cListItem = position; //ï¿½ï¿½ï¿½oï¿½Iï¿½ï¿½ï¿½m
+			playSong(recPATH + "/" + lstArray.get(cListItem).toString()); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		}
      };
 
- 	private void playSong(String path) {
+     	private void playSong(String path) {
  		try
  		{
  			mediaplayer.reset();
-  			mediaplayer.setDataSource(path); //¼½©ñ¿ý­µ¸ô®|
+  			mediaplayer.setDataSource(path); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½|
  			mediaplayer.prepare();
- 			mediaplayer.start(); //¶}©l¼½©ñ
- 			txtRec.setText("¼½©ñ¡G" + lstArray.get(cListItem).toString());
+ 			mediaplayer.start(); //ï¿½}ï¿½lï¿½ï¿½ï¿½ï¿½
+ 			txtRec.setText("ï¿½ï¿½ï¿½ï¿½G" + lstArray.get(cListItem).toString());
  			imgDisable(imgRecord);
  			imgDisable(imgPlay);
  			imgEnable(imgStop);
  			mediaplayer.setOnCompletionListener(new OnCompletionListener() {
  				public void onCompletion(MediaPlayer arg0) {
- 					txtRec.setText(lstArray.get(cListItem).toString() + "¼½§¹¡I");
+ 					txtRec.setText(lstArray.get(cListItem).toString() + "ï¿½ï¿½ï¿½ï¿½ï¿½I");
  					imgEnable(imgRecord);
  					imgEnable(imgPlay);
  					imgDisable(imgStop);
@@ -132,9 +132,9 @@ public class RecordActivity extends Activity {
   		} catch (IOException e) {}
  	}
 
- 	//¨ú±o¿ý­µÀÉ®×¦Cªí
+ 	//ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½É®×¦Cï¿½ï¿½
  	public void recList() {
- 		lstArray.clear(); //²M°£°}¦C
+ 		lstArray.clear(); //ï¿½Mï¿½ï¿½ï¿½}ï¿½C
 		for(File file:recPATH.listFiles()) {
 			if(file.getName().toLowerCase().endsWith(".amr")) {
 				lstArray.add(file.getName());
@@ -146,17 +146,17 @@ public class RecordActivity extends Activity {
 		}
  	}
 
- 	private void imgEnable(ImageView image) { //¨Ï«ö¶s¦³®Ä
+ 	private void imgEnable(ImageView image) { //ï¿½Ï«ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
  		image.setEnabled(true);
  		image.setAlpha(255);
  	}
 
- 	private void imgDisable(ImageView image) { //¨Ï«ö¶s¥¢¯à
+ 	private void imgDisable(ImageView image) { //ï¿½Ï«ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½
  		image.setEnabled(false);
  		image.setAlpha(50);
  	}
 
- 	protected String add0(int n) { //­Ó¦ì¼Æ«e­±¸É¹s
+ 	protected String add0(int n) { //ï¿½Ó¦ï¿½Æ«eï¿½ï¿½ï¿½É¹s
  		if(n<10) return ("0" + n);
  		else return ("" + n);
  	}

@@ -11,19 +11,73 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
 
 
 public class MainActivity extends Activity {
     //UI component
     private Button btnStart;
     private Button btnStop;
+    private Button btnDebug;
     private TextView status;
-
+    private TextView debugTxt;
 
     private String fileName;
     private MediaRecorder recorder;
     private File recFile, recPath;
+    private Button.OnClickListener btnOnclick = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.btnRec: {
+                    status.setText(recFile.getAbsolutePath());
+                    try {
+                        fileName = "test";
+                        recFile = new File(recPath + "/" + fileName + ".amr");
+                        recorder = new MediaRecorder();
+
+                        //setting the source of recorder
+                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+
+                        //setting the format and the encoder
+                        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+                        recorder.setOutputFile(recFile.getAbsolutePath());
+
+                        //prepare to start
+                        recorder.prepare();
+                        recorder.start();
+                        status.setText(recFile.getAbsolutePath());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+
+                case R.id.btnStop: {
+                    if (recFile != null) {
+                        recorder.stop();
+                        recorder.release();
+                        recorder = null;
+                    }
+                    status.setText("Stopped");
+                    break;
+                }
+            }
+        }
+    };
+    private Button.OnClickListener debugClick = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String text = "Status : " + Environment.getExternalStorageState() + "\n" +
+                    "Path :" + Environment.getExternalStorageDirectory() + "\n" +
+                    "Equal ava? :" + Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) + "\n" +
+                    "Read Only :" + Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState())+
+                    "Cache Path :";
+            debugTxt.setText(text);
+
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +85,19 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         //UI config
-        btnStart = (Button)findViewById(R.id.btnRec);
-        btnStop = (Button)findViewById(R.id.btnStop);
-        status = (TextView)findViewById(R.id.status);
-
+        btnStart = (Button) findViewById(R.id.btnRec);
+        btnStop = (Button) findViewById(R.id.btnStop);
+        status = (TextView) findViewById(R.id.status);
+        debugTxt = (TextView) findViewById(R.id.debugTxt);
+        btnDebug = (Button) findViewById(R.id.debug);
         //Onclick listener
         btnStart.setOnClickListener(btnOnclick);
         btnStop.setOnClickListener(btnOnclick);
-
+        btnDebug.setOnClickListener(debugClick);
         //basic setup for variables
         recPath = Environment.getExternalStorageDirectory();
-    }
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,48 +120,5 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    private Button.OnClickListener btnOnclick = new Button.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            switch(v.getId())
-            {
-                case R.id.btnRec: {
-                        status.setText("Started");
-                    try
-                    {
-                        fileName = "test";
-
-                        recorder = new MediaRecorder();
-
-                        //setting the source of recorder
-                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-
-                        //setting the format and the encoder
-                        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-                        recorder.setOutputFile();
-
-                        //prepare to start
-                        recorder.prepare();
-                        recorder.start();
-                    }catch(IOException e) {
-                    }
-                    break;
-                }
-
-                case R.id.btnStop:
-                {
-                    recorder.stop();
-                    recorder.release();
-                    status.setText("Stopped");
-                    break;
-                }
-            }
-        }
-    };
-
 
 }
