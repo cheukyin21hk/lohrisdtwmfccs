@@ -1,7 +1,6 @@
 package com.example.lohris.fyp;
 
 import android.app.Activity;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -22,31 +21,30 @@ public class MainActivity extends Activity {
     private TextView debugTxt;
 
     private String fileName;
-    private MediaRecorder recorder;
+    private WavAudioRecorder recorder;
     private File recFile, recPath;
     private Button.OnClickListener btnOnclick = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.btnRec: {
-                    status.setText(recFile.getAbsolutePath());
                     try {
                         fileName = "test";
-                        recFile = new File(recPath + "/" + fileName + ".amr");
-                        recorder = new MediaRecorder();
+                        recFile = new File(recPath + "/" + fileName + ".wav");
+                        if(WavAudioRecorder.State.INITIALIZING == recorder.getState()) {
 
-                        //setting the source of recorder
-                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-
-                        //setting the format and the encoder
-                        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-                        recorder.setOutputFile(recFile.getAbsolutePath());
-
-                        //prepare to start
-                        recorder.prepare();
-                        recorder.start();
-                        status.setText(recFile.getAbsolutePath());
+                            recorder.setOutputFile(recFile.getAbsolutePath());
+                            recorder.prepare();
+                            recorder.start();
+                            status.setText(recFile.getAbsolutePath());
+                        }
+                        else if(WavAudioRecorder.State.ERROR == recorder.getState())
+                        {
+                            recorder.release();
+                            recorder = WavAudioRecorder.getInstanse();
+                            recorder.setOutputFile(recFile.getAbsolutePath());
+                            status.setText("Recover with a new Instance again");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -54,12 +52,12 @@ public class MainActivity extends Activity {
                 }
 
                 case R.id.btnStop: {
-                    if (recFile != null) {
-                        recorder.stop();
-                        recorder.release();
-                        recorder = null;
-                    }
+                    if (WavAudioRecorder.State.RECORDING == recorder.getState()) {
+                    recorder.stop();
+                    recorder.reset();
                     status.setText("Stopped");
+                    }
+
                     break;
                 }
             }
@@ -96,7 +94,7 @@ public class MainActivity extends Activity {
         btnDebug.setOnClickListener(debugClick);
         //basic setup for variables
         recPath = Environment.getExternalStorageDirectory();
-
+        recorder = WavAudioRecorder.getInstanse();
     }
 
     @Override
