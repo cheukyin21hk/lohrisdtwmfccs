@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import utili.FileNameGenerator;
+import utili.WavAudioRecorder;
+
 
 public class MainActivity extends Activity {
     //UI component
@@ -29,7 +32,7 @@ public class MainActivity extends Activity {
             switch (v.getId()) {
                 case R.id.btnRec: {
                     try {
-                        fileName = "test";
+                        fileName = "sample_";
                         recFile = new File(recPath + "/" + fileName + ".wav");
                         if(WavAudioRecorder.State.INITIALIZING == recorder.getState()) {
 
@@ -37,6 +40,7 @@ public class MainActivity extends Activity {
                             recorder.prepare();
                             recorder.start();
                             status.setText(recFile.getAbsolutePath());
+
                         }
                         else if(WavAudioRecorder.State.ERROR == recorder.getState())
                         {
@@ -66,11 +70,9 @@ public class MainActivity extends Activity {
     private Button.OnClickListener debugClick = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String text = "Status : " + Environment.getExternalStorageState() + "\n" +
-                    "Path :" + Environment.getExternalStorageDirectory() + "\n" +
-                    "Equal ava? :" + Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) + "\n" +
-                    "Read Only :" + Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState())+
-                    "Cache Path :";
+            FileNameGenerator fNG = FileNameGenerator.getInstance();
+            String text = "Name: "+fNG.getSampleName();
+            text += "\n Directory: "+fNG.getDirectory();
             debugTxt.setText(text);
 
 

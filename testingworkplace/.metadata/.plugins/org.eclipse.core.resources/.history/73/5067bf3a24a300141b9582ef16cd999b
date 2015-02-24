@@ -1,8 +1,0 @@
-
-public class TestAlgo {
-	public static void main(String args[])
-	{
-		Wave wave = new Wave();
-		
-	}
-}

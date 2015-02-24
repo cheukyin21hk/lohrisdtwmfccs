@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="com.musicg.wave.Wave"/>
+<fullyQualifiedTypeName name="com.musicg.dsp.FastFourierTransform"/>
+<fullyQualifiedTypeName name="be.tarsos.dsp.util.fft.FFT"/>
+<fullyQualifiedTypeName name="net.sf.javaml.distance.fastdtw.timeseries.TimeSeries"/>
+<fullyQualifiedTypeName name="com.timeseries.TimeSeries"/>
+<fullyQualifiedTypeName name="com.util.DistanceFunction"/>
+<fullyQualifiedTypeName name="com.DtwTest"/>
+<fullyQualifiedTypeName name="com.dtw.FastDTW"/>
+<fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="java.util.Calendar"/>
 </qualifiedTypeNameHistroy>
