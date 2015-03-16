@@ -22,7 +22,7 @@ public class FileNameGenerator {
     }
 
     //return the name of sample by time
-    public String getSampleName()
+    public String getWaveSampleName()
     {
 
         //part for generating the file name with time based on it
@@ -43,6 +43,18 @@ public class FileNameGenerator {
         directoryPath = Environment.getExternalStorageDirectory();
         return directoryPath.toString();
     }
+    public String getTextSampleName()
+    {
 
+        //part for generating the file name with time based on it
+        String time;
+        String name = "sample_";
+        Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyMMddhhmmss");
+        time = formatter.format(date);
+        name+=time;
+        name = name.concat(".txt");
+        return name;
+    }
 
 }

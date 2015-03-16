@@ -12,13 +12,13 @@ import android.widget.TextView;
 import java.io.File;
 
 import ars.fyp.utils.FileNameGenerator;
-import ars.fyp.utils.WavAudioRecorder;
+import ars.fyp.utils.AudioPatterRecorder;
 
 
 public class Training extends ActionBarActivity {
     private Button startBtn,stopBtn,debugBtn;
     private TextView statusTxt,debugTxt;
-    private WavAudioRecorder recorder;
+    private AudioPatterRecorder recorder;
     private FileNameGenerator fNG;
     private String recordFilePath;
 
@@ -28,18 +28,19 @@ public class Training extends ActionBarActivity {
             switch (v.getId()) {
                 case R.id.startBtn: {
                     try {
-                        if(WavAudioRecorder.State.INITIALIZING == recorder.getState()) {
+                        if(AudioPatterRecorder.State.INITIALIZING == recorder.getState()) {
+                            recordFilePath = fNG.getDirectory() + "/" + fNG.getTextSampleName();
                             recorder.setOutputFile(recordFilePath);
                             recorder.prepare();
                             recorder.start();
 
-                            statusTxt.setText(recordFilePath + "is recording");
+                            statusTxt.setText(recordFilePath + " is recording");
 
                         }
-                        else if(WavAudioRecorder.State.ERROR == recorder.getState())
+                        else if(AudioPatterRecorder.State.ERROR == recorder.getState())
                         {
                             recorder.release();
-                            recorder = WavAudioRecorder.getInstance();
+                            recorder = AudioPatterRecorder.getInstance();
                             recorder.setOutputFile(recordFilePath);
                             statusTxt.setText("Error found, recover with new recording instance");
                         }
@@ -50,7 +51,7 @@ public class Training extends ActionBarActivity {
                 }
 
                 case R.id.StopBtn: {
-                    if (WavAudioRecorder.State.RECORDING == recorder.getState()) {
+                    if (AudioPatterRecorder.State.RECORDING == recorder.getState()) {
                         recorder.stop();
                         recorder.reset();
                         statusTxt.setText("Stopped"+"\n"+recordFilePath+" is created");
@@ -66,7 +67,7 @@ public class Training extends ActionBarActivity {
     private Button.OnClickListener debugClick = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String text = "Name: "+fNG.getSampleName();
+            String text = "Name: "+fNG.getTextSampleName();
             text += "\n Directory: "+fNG.getDirectory();
             text += "\n\n\n"+recordFilePath;
             text += "\n"+Environment.getExternalStorageDirectory()+"/"+"wave.wav";
@@ -81,7 +82,7 @@ public class Training extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
         fNG = FileNameGenerator.getInstance();
-        recordFilePath = fNG.getDirectory() + "/" + fNG.getSampleName();
+        recordFilePath = fNG.getDirectory() + "/" + fNG.getTextSampleName();
         //get Button
         startBtn = (Button) findViewById(R.id.startBtn);
         stopBtn = (Button) findViewById(R.id.StopBtn);
@@ -90,7 +91,7 @@ public class Training extends ActionBarActivity {
         statusTxt = (TextView) findViewById(R.id.status);
         debugTxt = (TextView) findViewById(R.id.debugTxt);
 
-        recorder = WavAudioRecorder.getInstance();
+        recorder = AudioPatterRecorder.getInstance();
         //set onclick listener
         debugBtn.setOnClickListener(debugClick);
         startBtn.setOnClickListener(btnOnclick);

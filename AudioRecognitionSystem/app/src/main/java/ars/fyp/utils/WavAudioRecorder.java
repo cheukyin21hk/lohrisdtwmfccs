@@ -1,7 +1,7 @@
 package ars.fyp.utils;
 
 /**
- * Created by lohris on 25/2/15.
+ * modified by Lohris Ng on 25/2/15.
  */
 import java.io.File;
 import java.io.IOException;
@@ -35,9 +35,6 @@ public class WavAudioRecorder {
      * STOPPED: reset needed
      */
     public enum State {INITIALIZING, READY, RECORDING, ERROR, STOPPED};
-
-    public static final boolean RECORDING_UNCOMPRESSED = true;
-    public static final boolean RECORDING_COMPRESSED = false;
 
     // The interval in which the recorded samples are output to the file
     // Used only in uncompressed mode
@@ -93,7 +90,7 @@ public class WavAudioRecorder {
                 return;
             }
             int numOfBytes = audioRecorder.read(buffer, 0, buffer.length); // read audio data to buffer
-//			Log.d(WavAudioRecorder.this.getClass().getName(), state + ":" + numOfBytes);
+            soundAnalysis(1000);
             try {
                 randomAccessWriter.write(buffer); 		  // write audio data to file
                 payloadSize += buffer.length;
@@ -197,20 +194,9 @@ public class WavAudioRecorder {
                 if ((audioRecorder.getState() == AudioRecord.STATE_INITIALIZED) & (filePath != null)) {
                     // write file header
                     randomAccessWriter = new RandomAccessFile(filePath, "rw");
-                    randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
-                    randomAccessWriter.writeBytes("RIFF");
-                    randomAccessWriter.writeInt(0); // Final file size not known yet, write 0
-                    randomAccessWriter.writeBytes("WAVE");
-                    randomAccessWriter.writeBytes("fmt ");
-                    randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
-                    randomAccessWriter.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
-                    randomAccessWriter.writeShort(Short.reverseBytes(nChannels));// Number of channels, 1 for mono, 2 for stereo
-                    randomAccessWriter.writeInt(Integer.reverseBytes(sRate)); // Sample rate
-                    randomAccessWriter.writeInt(Integer.reverseBytes(sRate*nChannels*mBitsPersample/8)); // Byte rate, SampleRate*NumberOfChannels*mBitsPersample/8
-                    randomAccessWriter.writeShort(Short.reverseBytes((short)(nChannels*mBitsPersample/8))); // Block align, NumberOfChannels*mBitsPersample/8
-                    randomAccessWriter.writeShort(Short.reverseBytes(mBitsPersample)); // Bits per sample
-                    randomAccessWriter.writeBytes("data");
-                    randomAccessWriter.writeInt(0); // Data chunk size not known yet, write 0
+                    randomAccessWriter.setLength(0);
+
+                    //mPeriodInFrames * 2   * mBitsPersample/8* nChannels
                     buffer = new byte[mPeriodInFrames*mBitsPersample/8*nChannels];
                     state = State.READY;
                 } else {
@@ -296,6 +282,7 @@ public class WavAudioRecorder {
             payloadSize = 0;
             audioRecorder.startRecording();
             audioRecorder.read(buffer, 0, buffer.length);	//[TODO: is this necessary]read the existing data in audio hardware, but don't do anything
+            soundAnalysis(1000);
             state = State.RECORDING;
         } else {
             Log.e(WavAudioRecorder.class.getName(), "start() called on illegal state");
@@ -332,4 +319,152 @@ public class WavAudioRecorder {
             state = State.ERROR;
         }
     }
+
+    public short convertByteToShort(byte mib,byte lib)
+    {
+        return (short)(((mib & 0xff) << 8) | lib);
+    }
+
+    public void soundAnalysis(int offsetSize)
+    {
+        long avgAmplitude = 0;
+        short amplitude1 = 0;
+        short amplitude2 = 0;
+        int crossCounting = 0;
+        int frequency = 0;
+        int loopRequiredForOuter = (buffer.length/offsetSize)*offsetSize;
+        int counting[] = new int[10];
+        int countingAverage[] = new int[10];
+
+        for(int i =0; i < loopRequiredForOuter ; i+=offsetSize)
+        {
+            avgAmplitude = 0;
+            for(int j = 0; j < offsetSize ; j+=4)
+            {
+                amplitude1 = convertByteToShort(buffer[offsetSize +j],buffer[offsetSize +j+1]);
+                amplitude2 = convertByteToShort(buffer[offsetSize +j+2],buffer[offsetSize +j+3]);
+                avgAmplitude += Math.abs(amplitude1) + Math.abs(amplitude2);
+                if(amplitude1 < 0 && amplitude2 >= 0)
+                    crossCounting++;
+                else if(amplitude1 > 0 && amplitude2 <= 0)
+                    crossCounting++;
+            }
+            avgAmplitude /= offsetSize;
+            frequency = (44100/offsetSize)* crossCounting;
+            Log.wtf("Preload Size = "," " + payloadSize);
+            Log.wtf("Average Frequency",frequency+" ");
+            Log.wtf("Average Amplitude : ",avgAmplitude+" ");
+        }
+    }
+
+    public void printFrequency(int offsetSize)
+    {
+
+    }
+
+    public void printAmplitudeDistribution()
+    {
+        short amplitude1 = 0;
+        short amplitude2 = 0;
+        int numberOfLoop = (buffer.length/4)*4;
+        int counting[] = new int[10];
+        int countingAverage[] = new int[10];
+        for(int i = 0;i<10;i++)
+        {
+            counting[i] = 0;
+            countingAverage[i] =0 ;
+        }
+        for(int i = 0;i<numberOfLoop;i+=4)
+        {
+            amplitude1 = convertByteToShort(buffer[i],buffer[i+1]);
+            amplitude2 = convertByteToShort(buffer[i+2],buffer[i+3]);
+            compareAmplitude(counting,countingAverage,amplitude1);
+            compareAmplitude(counting,countingAverage,amplitude2);
+        }
+        if(counting[0] != 0)
+            Log.wtf("Method : periodic - ","signal btw -100000 - -10000 : " + countingAverage[0]/counting[0]);
+        if(counting[1] != 0)
+            Log.wtf("Method : periodic - ","signal btw -10000 - -1000 : " + countingAverage[1]/counting[1]);
+        if(counting[2] != 0)
+            Log.wtf("Method : periodic - ","signal btw -1000 - -100 : " + countingAverage[2]/counting[2]);
+        if(counting[3] != 0)
+            Log.wtf("Method : periodic - ","signal btw -100 - -10 : " + countingAverage[3]/counting[3]);
+        if(counting[4] != 0)
+            Log.wtf("Method : periodic - ","signal btw -10 - 0 : " + countingAverage[4]/counting[4]);
+        if(counting[5] != 0)
+            Log.wtf("Method : periodic - ","signal btw 0 - 10 : " + countingAverage[5]/counting[5]);
+        if(counting[6] != 0)
+            Log.wtf("Method : periodic - ","signal btw 10 - 100 : " + countingAverage[6]/counting[6]);
+        if(counting[7] != 0)
+            Log.wtf("Method : periodic - ","signal btw 100 - 1000 : " + countingAverage[7]/counting[7]);
+        if(counting[8] != 0)
+            Log.wtf("Method : periodic - ","signal btw 1000 - 10000 : " + countingAverage[8]/counting[8]);
+        if(counting[9] != 0)
+            Log.wtf("Method : periodic - ","signal btw 10000 - 100000 : " + countingAverage[9]/counting[9]);
+    }
+
+    public void compareAmplitude(int[] counting,int[] countingAverage,int compareValue)
+    {
+        if(compareValue >=-100000 && compareValue <-10000) {
+            counting[0]++;
+            countingAverage[0]+=compareValue;
+        }
+        else if(compareValue >=-10000 && compareValue <-1000)
+        {
+            counting[1]++;
+            countingAverage[1]+=compareValue;
+        }
+        else if(compareValue >=-1000 && compareValue <-100)
+        {   counting[2]++;
+            countingAverage[2]+=compareValue;
+        }
+        else if(compareValue >=-100 && compareValue <-10)
+        {   counting[3]++;
+            countingAverage[3]+=compareValue;
+        }
+        else if(compareValue >-10 && compareValue <0)
+        {   counting[4]++;
+            countingAverage[4]+=compareValue;
+        }
+        else if(compareValue >= 0 && compareValue <10)
+        {   counting[5]++;
+            countingAverage[5]+=compareValue;
+        }
+        else if(compareValue >= 10 && compareValue <100)
+        {   counting[6]++;
+            countingAverage[6]+=compareValue;
+        }
+        else if(compareValue >= 100 && compareValue <1000)
+        {   counting[7]++;
+            countingAverage[7]+=compareValue;
+        }
+        else if(compareValue >= 1000 && compareValue <10000) {
+            counting[8]++;
+            countingAverage[8]+=compareValue;
+        }
+        else if(compareValue >= 10000 && compareValue <100000) {
+            counting[9]++;
+            countingAverage[9]+=compareValue;
+        }
+
+    }
+
+    public void writeWaveHeader() throws IOException {
+
+        randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
+        randomAccessWriter.writeBytes("RIFF");
+        randomAccessWriter.writeInt(0); // Final file size not known yet, write 0
+        randomAccessWriter.writeBytes("WAVE");
+        randomAccessWriter.writeBytes("fmt ");
+        randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
+        randomAccessWriter.writeShort(Short.reverseBytes((short) 1)); // AudioFormat, 1 for PCM
+        randomAccessWriter.writeShort(Short.reverseBytes(nChannels));// Number of channels, 1 for mono, 2 for stereo
+        randomAccessWriter.writeInt(Integer.reverseBytes(sRate)); // Sample rate
+        randomAccessWriter.writeInt(Integer.reverseBytes(sRate*nChannels*mBitsPersample/8)); // Byte rate, SampleRate*NumberOfChannels*mBitsPersample/8
+        randomAccessWriter.writeShort(Short.reverseBytes((short)(nChannels*mBitsPersample/8))); // Block align, NumberOfChannels*mBitsPersample/8
+        randomAccessWriter.writeShort(Short.reverseBytes(mBitsPersample)); // Bits per sample
+        randomAccessWriter.writeBytes("data");
+        randomAccessWriter.writeInt(0); // Data chunk size not known yet, write 0
+    }
+
 }
