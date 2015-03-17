@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,7 +56,13 @@ public class ChooseRestaurant extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_restaurant);
         initialization();
-
+        searchField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                   searchField.setText("");}
+            }
+        });
         submitBtn.setOnClickListener(btnOnCLickHandler);
         new getAreas().execute(listAreas);
         areaDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -100,7 +105,6 @@ public class ChooseRestaurant extends ActionBarActivity {
                 startActivity(intent);
             }
         });
-        searchField.clearFocus();
     }
 
     private Button.OnClickListener btnOnCLickHandler = new Button.OnClickListener()
