@@ -4,8 +4,8 @@ package rms.fyp.rmsphone;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -24,7 +24,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -56,13 +55,7 @@ public class ChooseRestaurant extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_restaurant);
         initialization();
-        searchField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                   searchField.setText("");}
-            }
-        });
+
         submitBtn.setOnClickListener(btnOnCLickHandler);
         new getAreas().execute(listAreas);
         areaDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -105,6 +98,7 @@ public class ChooseRestaurant extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+        searchField.clearFocus();
     }
 
     private Button.OnClickListener btnOnCLickHandler = new Button.OnClickListener()

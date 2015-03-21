@@ -22,6 +22,14 @@
             android:name=".ChooseSize"
             android:label="@string/title_activity_choose_size" >
         </activity>
+        <activity
+            android:name=".ConfirmTicket"
+            android:label="@string/title_activity_confirm_ticket" >
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
+        </activity>
     </application>
 
 </manifest>

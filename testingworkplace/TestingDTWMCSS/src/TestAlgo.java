@@ -17,13 +17,13 @@ public class TestAlgo {
 						+ ".txt");
 				List<Integer> frequencies = calculateFrequency(datas, 16000);
 				List<Integer> avgAmp = calculateAvgAmplitudes(datas, 16000);
-				List<Integer> avgAmpWithout = calculateAvgAmplitudesWithoutAbs(
+				List<Integer> avgAmpWithout = calculateAvgAmplitudesWithClassify(
 						datas, 4000);
 				File frequenciesFile = new File("result/313/" + i + "Freq.txt");
 				File amplitudesFile = new File("result/313/" + i + "Amp.txt");
 				File avgAmpFile = new File("result/313/" + i + "AvgAmp.txt");
 				File avgAmpWithoutAbsFile = new File("result/313/" + i
-						+ "AvgAmpwithoutAbs.txt");
+						+ "AvgAmpWithoutClassify.txt");
 				System.out.println("The data sizes : " + datas.size());
 				System.out.println("The frequencies size : "
 						+ frequencies.size());
@@ -99,18 +99,33 @@ public class TestAlgo {
 		int pveAvgAmp = 0;
 		int pveCount = 0;
 		int nveCount = 0;
-		int 
 		List<Integer> avgAmplitudes = new ArrayList<Integer>();
 		for (int i = 0; i < datas.size(); i++) {
-			avgAmp += datas.get(i);
+			if(datas.get(i) >= 0)
+			{
+				pveAvgAmp +=datas.get(i);
+				pveCount ++;
+			}
+			else
+			{
+				nveAvgAmp +=datas.get(i);
+				nveCount ++;
+			}
 			if (i % offsetSize == 0 && i != 0) {
-				avgAmp = avgAmp / offsetSize;
-				avgAmplitudes.add(Integer.valueOf(avgAmp));
-				avgAmp = 0;
+				pveAvgAmp /=pveCount;
+				nveAvgAmp /=nveCount;
+				avgAmplitudes.add(Integer.valueOf(nveAvgAmp));
+				avgAmplitudes.add(Integer.valueOf(pveAvgAmp));
+				nveAvgAmp = 0;
+				pveAvgAmp = 0;
+				pveCount = 0;
+				nveCount = 0;
 			}
 		}
-		avgAmp = avgAmp / offsetSize;
-		avgAmplitudes.add(Integer.valueOf(avgAmp));
+		pveAvgAmp /=pveCount;
+		nveAvgAmp /=nveCount;
+		avgAmplitudes.add(Integer.valueOf(nveAvgAmp));
+		avgAmplitudes.add(Integer.valueOf(pveAvgAmp));
 		return avgAmplitudes;
 	}
 
