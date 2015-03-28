@@ -2,7 +2,6 @@ package ars.fyp.utils;
 
 
 import android.os.Environment;
-import android.text.format.DateFormat;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -22,8 +21,7 @@ public class FileNameGenerator {
     }
 
     //return the name of sample by time
-    public String getWaveSampleName()
-    {
+    public String getWaveSampleName() {
 
         //part for generating the file name with time based on it
         String time;
@@ -31,20 +29,19 @@ public class FileNameGenerator {
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMddhhmmss");
         time = formatter.format(date);
-        name+=time;
+        name += time;
         name = name.concat(".wav");
         return name;
     }
 
-    public String getDirectory()
-    {
+    public String getDirectory() {
         //part for generating the directory for the file
         File directoryPath;
         directoryPath = Environment.getExternalStorageDirectory();
-        return directoryPath.toString();
+        return directoryPath.toString()+"/testData";
     }
-    public String getTextSampleName()
-    {
+
+    public String getTextSampleName() {
 
         //part for generating the file name with time based on it
         String time;
@@ -52,7 +49,7 @@ public class FileNameGenerator {
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("yyMMddhhmmss");
         time = formatter.format(date);
-        name+=time;
+        name += time;
         name = name.concat(".txt");
         return name;
     }

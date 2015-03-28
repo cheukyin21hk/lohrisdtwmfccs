@@ -30,11 +30,11 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/debugBtn"
+        android:id="@+id/recordWaveBtn"
         android:layout_below="@+id/StopBtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="@string/debugBtn" />
+        android:text="@string/recordWaveBtn" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="debug text: "
         android:id="@+id/debugTxt"
-        android:layout_below="@+id/debugBtn"
+        android:layout_below="@+id/recordWaveBtn"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="34dp" />

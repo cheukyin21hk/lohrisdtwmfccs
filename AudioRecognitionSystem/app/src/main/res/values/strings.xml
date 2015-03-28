@@ -9,6 +9,7 @@
     <!-- Button String -->
     <string name="startBtn">Start recording</string>
     <string name="stopBtn">Stop recording</string>
-    <string name="debugBtn">update</string>
+    <string name="recordWaveBtn">Start Wave Recording</string>
+
 
 </resources>
