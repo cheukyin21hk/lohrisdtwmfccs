@@ -82,7 +82,6 @@ public class AudioPatterRecorder {
         }
     }
 
-
     public static AudioPatterRecorder getInstance() {
         AudioPatterRecorder result = null;
         int i = 0;
@@ -213,12 +212,13 @@ public class AudioPatterRecorder {
     public void soundAnalysis() {
         int avgAmp = 0;
         int crossingZero = 0 ;
-        for (int i = 0; i < buffer.length; i += 2) {
+        for (int i = 0; i < buffer.length-1; i ++) {
             if (buffer[i] < 0 && buffer[i + 1] >= 0)
                 crossingZero++;
             else if (buffer[i+1] < 0 && buffer[i] >= 0)
                 crossingZero++;
-            avgAmp += (buffer[i] * buffer[i]) + (buffer[i+1] * buffer[i+1]);
+            if(i %2 ==0)
+                avgAmp += (buffer[i] * buffer[i]) + (buffer[i+1] * buffer[i+1]);
         }
         avgAmp = avgAmp / buffer.length;
         avgAmp = (int) Math.sqrt(avgAmp);
@@ -238,6 +238,4 @@ public class AudioPatterRecorder {
     public enum State {
         INITIALIZING, READY, RECORDING, ERROR, STOPPED
     }
-
-
 }

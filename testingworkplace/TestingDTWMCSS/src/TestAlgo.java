@@ -92,7 +92,6 @@ public class TestAlgo {
 			}
 			returnList = new ArrayList<ArrayList<Integer>>(currentSet);
 		}
-
 		return returnList;
 	}
 
