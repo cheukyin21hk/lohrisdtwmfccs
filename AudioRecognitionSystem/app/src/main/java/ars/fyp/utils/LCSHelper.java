@@ -12,20 +12,20 @@ import java.util.Set;
 public class LCSHelper {
 
     public static ArrayList<Integer> findCommonLCS(ArrayList<ArrayList<Integer>> freqLists) {
-        ArrayList<Integer> result = null;
+        ArrayList<Integer> result = new ArrayList<>();
         ArrayList<Integer> lcsResult = null;
         ArrayList<ArrayList<Integer>> allPermutation;
         int[] input = new int[freqLists.size()];
         for (int i = 0; i < freqLists.size(); i++) {
             input[i] = i;
         }
-        allPermutation = permuteUnique(input);
+        allPermutation = getPermutation(input);
         for (int i = 0; i < allPermutation.size(); i++) {
             ArrayList<Integer> tmp = allPermutation.get(i);
-            lcsResult = lcs(freqLists.get(tmp.get(0)), freqLists.get(tmp.get(1)));
-            lcsResult = lcs(lcsResult, freqLists.get(tmp.get(2)));
-            lcsResult = lcs(lcsResult, freqLists.get(tmp.get(3)));
-            lcsResult = lcs(lcsResult, freqLists.get(tmp.get(4)));
+            lcsResult = findLCS(freqLists.get(tmp.get(0)), freqLists.get(tmp.get(1)));
+            lcsResult = findLCS(lcsResult, freqLists.get(tmp.get(2)));
+            lcsResult = findLCS(lcsResult, freqLists.get(tmp.get(3)));
+            lcsResult = findLCS(lcsResult, freqLists.get(tmp.get(4)));
 
             if (lcsResult.size() > result.size())
                 result = lcsResult;
@@ -34,7 +34,7 @@ public class LCSHelper {
     }
 
 
-    public static ArrayList<ArrayList<Integer>> permuteUnique(int[] num) {
+    public static ArrayList<ArrayList<Integer>> getPermutation(int[] num) {
         ArrayList<ArrayList<Integer>> returnList = new ArrayList<ArrayList<Integer>>();
         returnList.add(new ArrayList<Integer>());
 
@@ -53,8 +53,9 @@ public class LCSHelper {
         return returnList;
     }
 
-    public static ArrayList<Integer> skipLowAmplitude(ArrayList<Integer> data) {
-        ArrayList<Integer> classifiedFreq = null;
+    //skiping the low level of amplitude sample
+    public static ArrayList<Integer> getKeyFeature(List<Integer> data) {
+        ArrayList<Integer> classifiedFreq = new ArrayList<Integer>();
         int avgFreq = 0;
         for (int j = 0; j < data.size(); j += 2) {
             if (data.get(j) != 0) {
@@ -72,11 +73,11 @@ public class LCSHelper {
     }
 
 
-
-    public static ArrayList<Integer> lcs(ArrayList<Integer> a, ArrayList<Integer> b) {
+    //function longest common sequence between two integer
+    public static ArrayList<Integer> findLCS(List<Integer> a, List<Integer> b) {
         ArrayList<Integer> result = new ArrayList<Integer>();
-        ArrayList<Integer> x = a;
-        ArrayList<Integer> y = b;
+        List<Integer> x = a;
+        List<Integer> y = b;
         int M = x.size();
         int N = y.size();
 

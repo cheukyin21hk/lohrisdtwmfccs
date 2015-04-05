@@ -108,7 +108,7 @@ public class EventRecorder extends ActionBarActivity {
                 }
                 case R.id.startRcBtn: {
                     if (sampleNumber < 5) {
-                        try {
+
                             if (AudioPatterRecorder.State.INITIALIZING == recorder.getState()) {
                                 recordFilePath = FileNameGenerator.getDirectory() + "/" + FileNameGenerator.getSamepleName(eventNumber, sampleNumber);
                                 recorder.setOutputFile(recordFilePath);
@@ -121,26 +121,28 @@ public class EventRecorder extends ActionBarActivity {
                                 recorder.setOutputFile(recordFilePath);
                                 statusDisplay.setText("Error found, recover with new recording instance");
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     } else {
                         statusDisplay.setText("The number of sample cannot exceed 5.");
                     }
                     break;
                 }
-                case R.id.saveBtn:
-                {
-                    String eventNamePRES = "E"+eventNumber+"Name";
-                    String editTextVal = eventName.getText().toString();
-                    editor.putString(eventNamePRES,editTextVal);
-                    editor.putInt(NUMBEROFEVENTS,++eventNumber);
-                    editor.commit();
+                case R.id.saveBtn: {
+                    if (sampleNumber < 5) {
+                        Toast.makeText(getApplicationContext(), "The sample of sample must reach 5 or above", Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(getApplicationContext(),editTextVal+" have been saved.",Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(),MainPage.class);
-                    startActivity(intent);
+                    } else
+                    {
+                        String eventNamePRES = "E"+eventNumber+"Name";
+                        String editTextVal = eventName.getText().toString();
+                        editor.putString(eventNamePRES,editTextVal);
+                        editor.putInt(NUMBEROFEVENTS,++eventNumber);
+                        editor.commit();
 
+                        Toast.makeText(getApplicationContext(),editTextVal+" have been saved.",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(),MainPage.class);
+                        startActivity(intent);
+                    }
                     break;
                 }
                 case R.id.eCancelBtn:
