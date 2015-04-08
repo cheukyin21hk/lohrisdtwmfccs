@@ -128,6 +128,7 @@ public class MainPage extends ActionBarActivity {
                 }
                 case R.id.patternBtn: {
                     generatePattern();
+                    Toast.makeText(getApplicationContext(), "All patterns have been updated", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 case R.id.monitorBtn: {
@@ -173,7 +174,8 @@ public class MainPage extends ActionBarActivity {
                 Log.i(this.getClass().toString(), "The size of datas : " + datas.size());
             }
             ArrayList<Integer> result = LCSHelper.findCommonLCS(datas);
-            String fileName = FileNameGenerator.getDirectory() + "/" + FileNameGenerator.getPatternName(i);
+            String fileName = directory + "/" + FileNameGenerator.getPatternName(i);
+            Log.wtf("",fileName);
             FileIOUtils.writeDataToFile(new File(fileName), result);
         }
     }
@@ -220,7 +222,7 @@ public class MainPage extends ActionBarActivity {
     {
         patternLists = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < noOfEvent; i++) {
-            String fileNmae = FileNameGenerator.getDirectory() + FileNameGenerator.getPatternName(i);
+            String fileNmae = FileNameGenerator.getDirectory() +"/"+ FileNameGenerator.getPatternName(i);
             ArrayList<Integer> pattern = FileIOUtils.readIntFromRandomAccessFile(fileNmae);
             patternLists.add(pattern);
         }
@@ -235,7 +237,7 @@ public class MainPage extends ActionBarActivity {
         {
             for(int j = 0; j < noOfSample; j++)
             {
-                String fileNmae = FileNameGenerator.getDirectory() + FileNameGenerator.getSamepleName(i,j);
+                String fileNmae = FileNameGenerator.getDirectory()+"/" + FileNameGenerator.getSamepleName(i,j);
                 ArrayList<Integer> data = FileIOUtils.readIntFromRandomAccessFile(fileNmae);
                 if(data.size() > dataSize)
                 {

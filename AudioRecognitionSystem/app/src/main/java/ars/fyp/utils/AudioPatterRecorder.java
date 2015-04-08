@@ -223,7 +223,8 @@ public class AudioPatterRecorder {
 
         avgAmp = (int)Math.round(Math.sqrt(avgAmp / buffer.length)/150.0);
         crossingZero = (int)Math.round(crossingZero * 44100/buffer.length/2000.0);
-
+        Log.i(this.getClass().toString(),"Average amplitude from APR: "+ avgAmp);
+        Log.i(this.getClass().toString(),"crossingZero from APR: "+ crossingZero);
         try {
             randomAccessWriter.writeInt(avgAmp);
             randomAccessWriter.writeInt(crossingZero);

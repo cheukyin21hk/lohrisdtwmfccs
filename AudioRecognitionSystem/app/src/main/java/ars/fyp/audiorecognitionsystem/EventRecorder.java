@@ -192,7 +192,7 @@ public class EventRecorder extends ActionBarActivity {
                     editor.putInt(nameForMin, min);
                     editor.commit();
                     endTimeBtn.setText("Start time - " + pad(hourOfDay) + ":" + pad(min));
-                    Toast.makeText(getApplicationContext(), "Time selected is:" + hourOfDay + ":" + min, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Time selected is : " + pad(hourOfDay) + ":" + pad(min), Toast.LENGTH_LONG).show();
                 }
             };
 
@@ -206,7 +206,7 @@ public class EventRecorder extends ActionBarActivity {
                     editor.putInt(nameForMin, min);
                     editor.commit();
                     startTimeBtn.setText("Start time - " + pad(hourOfDay) + ":" + pad(min));
-                    Toast.makeText(getApplicationContext(), "Time selected is:" + hourOfDay + ":" + min, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Time selected is : " + pad(hourOfDay) + ":" + pad(min), Toast.LENGTH_LONG).show();
                 }
             };
 

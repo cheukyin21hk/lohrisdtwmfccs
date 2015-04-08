@@ -12,67 +12,87 @@ import com.musicg.wave.Wave;
 
 public class TestAlgo {
 	public static void main(String args[]) {
-		int dateNo = 327;
+		int dateNo = 408;
 		int numberOfFile = 5;
 		ArrayList<List<Integer>> freqLists = new ArrayList<List<Integer>>();
 		String directory = "/Users/lohris/lohrisdtwmfccs/testingworkplace/TestingDTWMCSS/src/dataFile/"
 				+ dateNo + "/";
+		// try {
+		// prepareData(5512, dateNo, numberOfFile);
+		List<Integer> datas = null;
+		// i < number of samples
+		for (int i = 0; i < 5; i++) {
+			try {
+				ArrayList<Integer> temp;
+				datas = readIntFromRandomAccessFile(directory + "/"
+						+ FileNameGenerator.getSamepleName(0, i));
+				File dataFile = new File(directory + "/result/" + i);
+				temp = LCSHelper.getKeyFeature(datas);
+				writeDataToFile(dataFile,temp );
+				freqLists.add(temp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
+			// File amplitudesFile = new File("result/" + dateNo + "/" + i
+			// + "Amp.txt");
+			// writeDataToFile(amplitudesFile, datas);
+			// List<Integer> amp, freq = null;
+			// File ampFile = new File("result/" + dateNo + "/" + i
+			// + "amp.txt");
+			// File freqFile = new File("result/" + dateNo + "/" + i
+			// + "freq.txt");
+			// amp = new ArrayList<Integer>();
+			// freq = new ArrayList<Integer>();
+			// int avgFreq = 0, count = 0;
+			// for (int j = 0; j < datas.size(); j += 2) {
+			// if (datas.get(j) != 0) {
+			// if (datas.get(j + 1) >= 5)
+			// avgFreq = 3;
+			// else if (datas.get(j + 1) >= 3)
+			// avgFreq = 2;
+			// else
+			// avgFreq = 1;
+			// freq.add(avgFreq);
+			// }
+
+		}
+		File dataFile = new File(directory + "/result/" + "pattern");
 		try {
-			// prepareData(5512, dateNo, numberOfFile);
-			List<Integer> datas = null;
-			for (int i = 1; i <= numberOfFile; i++) {
-				datas = readIntFromRandomAccessFile(directory + i + ".txt");
-				// System.out.println(datas);
-				// File amplitudesFile = new File("result/" + dateNo + "/" + i
-				// + "Amp.txt");
-				// writeDataToFile(amplitudesFile, datas);
-				List<Integer> amp, freq = null;
-				File ampFile = new File("result/" + dateNo + "/" + i
-						+ "amp.txt");
-				File freqFile = new File("result/" + dateNo + "/" + i
-						+ "freq.txt");
-				amp = new ArrayList<Integer>();
-				freq = new ArrayList<Integer>();
-				int avgFreq = 0, count = 0;
-				for (int j = 0; j < datas.size(); j += 2) {
-					if (datas.get(j) != 0) {
-						if (datas.get(j + 1) >= 5)
-							avgFreq = 3;
-						else if (datas.get(j + 1) >= 3)
-							avgFreq = 2;
-						else
-							avgFreq = 1;
-						freq.add(avgFreq);
-					}
-
-				}
-				writeDataToFile(freqFile, freq);
-				freqLists.add(freq);
-			}
-			System.out.println(freqLists);
-			List<Integer> longestCommonSequence = new ArrayList<Integer>();
-			List<Integer> lcsResult = null;
-			int[] input = { 0, 1, 2, 3, 4 };
-			ArrayList<ArrayList<Integer>> result = permuteUnique(input);
-			for (int i = 0; i < result.size(); i++) {
-				lcsResult = lcs(freqLists.get(result.get(i).get(0)),
-						freqLists.get(result.get(i).get(1)));
-				lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(2)));
-				lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(3)));
-				lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(4)));
-
-				if(lcsResult.size() > longestCommonSequence.size())
-					longestCommonSequence = lcsResult;
-			}
-			System.out.println(longestCommonSequence);
-			for(int i = 0;i < longestCommonSequence.size();i++)
-			{
-				System.out.println(longestCommonSequence.get(i));
-			}
+			writeDataToFile(dataFile,LCSHelper.findCommonLCS(freqLists) );
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		// writeDataToFile(freqFile, freq);
+		// freqLists.add(freq);
+		// }
+		// System.out.println(freqLists);
+		// List<Integer> longestCommonSequence = new ArrayList<Integer>();
+		// List<Integer> lcsResult = null;
+		// int[] input = { 0, 1, 2, 3, 4 };
+		// ArrayList<ArrayList<Integer>> result = permuteUnique(input);
+		// for (int i = 0; i < result.size(); i++) {
+		// lcsResult = lcs(freqLists.get(result.get(i).get(0)),
+		// freqLists.get(result.get(i).get(1)));
+		// lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(2)));
+		// lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(3)));
+		// lcsResult = lcs(lcsResult, freqLists.get(result.get(i).get(4)));
+		//
+		// if(lcsResult.size() > longestCommonSequence.size())
+		// longestCommonSequence = lcsResult;
+		// }
+		// System.out.println(longestCommonSequence);
+		// for(int i = 0;i < longestCommonSequence.size();i++)
+		// {
+		// System.out.println(longestCommonSequence.get(i));
+		// }
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 	}
 
