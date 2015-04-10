@@ -27,6 +27,10 @@
             android:name=".Training"
             android:label="@string/title_activity_Training" >
         </activity>
+        <activity
+            android:name=".Configuration"
+            android:label="@string/title_activity_configuration" >
+        </activity>
     </application>
 
 </manifest>

@@ -1,9 +1,11 @@
 package ars.fyp.audiorecognitionsystem;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ public class MainPage extends ActionBarActivity {
     private ArrayList<ArrayList<Integer>> patternLists;
     private Thread monitorThread;
     private Boolean monitorOn = false;
+
     private Runnable monitorLogic = new Runnable() {
         public void run() {
             Log.i(this.getClass().toString(),"Monitor Thread start");
@@ -49,6 +52,7 @@ public class MainPage extends ActionBarActivity {
             Calendar tempTime;
             long endTime;
             long timeDiff;
+            boolean createdNotice = false;
             while (!Thread.currentThread().isInterrupted()) {
                 if (noOfEvent != 0) {
                     for (int i = 0; i < noOfEvent; i++) {
@@ -84,6 +88,7 @@ public class MainPage extends ActionBarActivity {
 
                         //the endtime for the recording
                         while (endTime > System.currentTimeMillis()) {
+                            createdNotice = false;
                             if (MonitorRecorder.State.INITIALIZING == monitorRecorder.getState()) {
                                 monitorRecorder.start();
                             } else if (MonitorRecorder.State.ERROR == monitorRecorder.getState()) {
@@ -95,10 +100,10 @@ public class MainPage extends ActionBarActivity {
                             monitorRecorder.stop();
                             monitorRecorder.reset();
                         }
-                        if (!monitorRecorder.getFoundPattern()) {
+                        if (!monitorRecorder.getFoundPattern() && !createdNotice) {
                             createNotice(i);
+                            createdNotice = true;
                         }
-                        Log.wtf("Success", "10 seconds have been passed");
                     }
                 }
             }
@@ -116,16 +121,11 @@ public class MainPage extends ActionBarActivity {
                     break;
                 }
                 case R.id.settingBtn: {
+                    Intent intent = new Intent(getApplicationContext(), Configuration.class);
+                    startActivity(intent);
                     break;
                 }
-                case R.id.resetBtn: {
-                    editor.clear();
-                    editor.commit();
-                    noOfEvent = 0;
-                    noOfSample = 0;
-                    Toast.makeText(getApplicationContext(), "All data have been deleted", Toast.LENGTH_SHORT).show();
-                    break;
-                }
+
                 case R.id.patternBtn: {
                     generatePattern();
                     Toast.makeText(getApplicationContext(), "All patterns have been updated", Toast.LENGTH_SHORT).show();
@@ -186,6 +186,7 @@ public class MainPage extends ActionBarActivity {
         resetBtn = (Button) findViewById(R.id.resetBtn);
         patternGenBtn = (Button) findViewById(R.id.patternBtn);
         monitorBtn = (Button) findViewById(R.id.monitorBtn);
+        resetBtn.setVisibility(View.GONE);
 
         patternGenBtn.setOnClickListener(btnListener);
         trainBtn.setOnClickListener(btnListener);
@@ -198,8 +199,6 @@ public class MainPage extends ActionBarActivity {
         editor = sharedPreferences.edit();
         noOfSample = sharedPreferences.getInt(SAMPLENOPERF, 5);
         noOfEvent = sharedPreferences.getInt(EVENTNOPREF, 0);
-
-
 
         initialPattern();
         intialSampleLengths();

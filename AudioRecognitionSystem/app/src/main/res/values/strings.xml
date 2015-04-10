@@ -17,6 +17,7 @@
     <string name="title_activity_main_page">Audio Reminder</string>
     <string name="title_activity_event_recorder">EventRecorder</string>
     <string name="title_activity_Training">Training System</string>
-    <string name="title_activity_monitoring">Monitoring</string>>
+    <string name="title_activity_monitoring">Monitoring</string>
+    <string name="title_activity_configuration">Configuration</string>>
 
 </resources>

@@ -43,7 +43,7 @@ public class MonitorRecorder {
             mAudioSource = audioSource;
             sRate = sampleRate;
             aFormat = audioFormat;
-            foundPattern = false;
+            foundPattern = true;
             mPeriodInFrames = sampleRate * TIMER_INTERVAL / 1000;        //?
             mBufferSize = mPeriodInFrames * 2 * nChannels * mBitsPersample / 8;        //?
             if (mBufferSize < AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)) {
@@ -149,6 +149,7 @@ public class MonitorRecorder {
         if (state == State.READY) {
             audioRecorder.startRecording();
             audioRecorder.read(buffer, 0, buffer.length);
+            foundPattern = false;
             state = State.RECORDING;
         } else {
             Log.e(MonitorRecorder.class.getName(), "start() called on illegal state");
