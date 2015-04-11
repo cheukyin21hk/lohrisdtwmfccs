@@ -283,8 +283,8 @@ public class MainPage extends ActionBarActivity {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("U forget to do the event")
-                        .setContentText("u DIDN'T do the event")
+                        .setContentTitle("Smart Reminder")
+                        .setContentText("u did not complete the event")
                         .setDefaults(DEFAULT_ALL)
                         .setPriority(2);
         Intent intent = new Intent();
