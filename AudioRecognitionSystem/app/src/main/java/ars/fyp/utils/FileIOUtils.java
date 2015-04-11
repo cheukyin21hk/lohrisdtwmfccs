@@ -34,6 +34,27 @@ public class FileIOUtils {
         return null;
     }
 
+    public static ArrayList<Integer> readStringToIntList(String filePath)
+    {
+        try {
+            RandomAccessFile raf = null;
+            raf = new RandomAccessFile(filePath, "rw");
+            ArrayList<Integer> datas = new ArrayList<Integer>();
+            for (int i = 0; i < raf.length()/2; i ++)
+            {
+                datas.add(Integer.parseInt(raf.readLine().trim()));
+            }
+            raf.close();
+            return datas;
+        } catch (FileNotFoundException e) {
+            Log.e(MainPage.class.toString(), e.toString());
+        } catch (IOException e) {
+            Log.e(MainPage.class.toString(), e.toString());
+        }
+        return null;
+    }
+
+
     public static void writeDataToFile(File filename, ArrayList<Integer> datas)
     {
         try {

@@ -27,6 +27,7 @@ import java.util.Calendar;
 
 import ars.fyp.utils.AudioPatterRecorder;
 import ars.fyp.utils.FileNameGenerator;
+import ars.fyp.utils.TimeUtils;
 
 
 public class EventRecorder extends ActionBarActivity {
@@ -121,6 +122,10 @@ public class EventRecorder extends ActionBarActivity {
                                 recorder.setOutputFile(recordFilePath);
                                 statusDisplay.setText("Error found, recover with new recording instance");
                             }
+                            else
+                            {
+
+                            }
 
                     } else {
                         statusDisplay.setText("The number of sample cannot exceed 5.");
@@ -191,8 +196,8 @@ public class EventRecorder extends ActionBarActivity {
                     editor.putInt(nameForHour, hourOfDay);
                     editor.putInt(nameForMin, min);
                     editor.commit();
-                    endTimeBtn.setText("Start time - " + pad(hourOfDay) + ":" + pad(min));
-                    Toast.makeText(getApplicationContext(), "Time selected is : " + pad(hourOfDay) + ":" + pad(min), Toast.LENGTH_LONG).show();
+                    endTimeBtn.setText("Start time - " + TimeUtils.pad(hourOfDay) + ":" + TimeUtils.pad(min));
+                    Toast.makeText(getApplicationContext(), "Time selected is : " + TimeUtils.pad(hourOfDay) + ":" + TimeUtils.pad(min), Toast.LENGTH_LONG).show();
                 }
             };
 
@@ -205,26 +210,18 @@ public class EventRecorder extends ActionBarActivity {
                     editor.putInt(nameForHour, hourOfDay);
                     editor.putInt(nameForMin, min);
                     editor.commit();
-                    startTimeBtn.setText("Start time - " + pad(hourOfDay) + ":" + pad(min));
-                    Toast.makeText(getApplicationContext(), "Time selected is : " + pad(hourOfDay) + ":" + pad(min), Toast.LENGTH_LONG).show();
+                    startTimeBtn.setText("Start time - " + TimeUtils.pad(hourOfDay) + ":" + TimeUtils.pad(min));
+                    Toast.makeText(getApplicationContext(), "Time selected is : " + TimeUtils.pad(hourOfDay) + ":" + TimeUtils.pad(min), Toast.LENGTH_LONG).show();
                 }
             };
 
-    //add leading function
-    private static String pad(int c) {
-        if (c >= 10)
-            return String.valueOf(c);
-        else
-            return "0" + String.valueOf(c);
-    }
+
 
     private void updateListView()
     {
         ArrayList<String> sampleListItems = new ArrayList<String>();
         for(int i = 0; i < 5 ; i++)
         {
-            Log.wtf("",""+sharedpreferences.getAll());
-            Log.wtf(this.getClass().toString(),sharedpreferences.getBoolean(FileNameGenerator.getSamepleName(eventNumber,sampleNumber),false)+"");
             if(sharedpreferences.getBoolean(FileNameGenerator.getSamepleName(eventNumber,i),false))
             {
                 sampleListItems.add("Sample "+i + " is created");
@@ -289,11 +286,11 @@ public class EventRecorder extends ActionBarActivity {
         hour = c.get(Calendar.HOUR_OF_DAY);
         minute = c.get(Calendar.MINUTE);
         startTimeBtn.setText("Start Time : " +
-                new StringBuilder().append(pad(hour))
-                        .append(":").append(pad(minute)));
+                new StringBuilder().append(TimeUtils.pad(hour))
+                        .append(":").append(TimeUtils.pad(minute)));
         endTimeBtn.setText("End Time : " +
-                new StringBuilder().append(pad(hour))
-                        .append(":").append(pad(minute)));
+                new StringBuilder().append(TimeUtils.pad(hour))
+                        .append(":").append(TimeUtils.pad(minute)));
     }
 
     @Override

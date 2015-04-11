@@ -59,9 +59,9 @@ public class LCSHelper {
         int avgFreq = 0;
         for (int j = 0; j < data.size(); j += 2) {
             if (data.get(j) != 0) {
-                if (data.get(j + 1) >= 5)
+                if (data.get(j + 1) >= 8)
                     avgFreq = 3;
-                else if (data.get(j + 1) >= 3)
+                else if (data.get(j + 1) >= 4)
                     avgFreq = 2;
                 else
                     avgFreq = 1;

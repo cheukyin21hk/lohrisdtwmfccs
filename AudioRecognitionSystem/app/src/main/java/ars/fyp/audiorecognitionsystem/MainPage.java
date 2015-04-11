@@ -1,11 +1,9 @@
 package ars.fyp.audiorecognitionsystem;
 
-import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -44,20 +42,24 @@ public class MainPage extends ActionBarActivity {
 
     private Runnable monitorLogic = new Runnable() {
         public void run() {
-            Log.i(this.getClass().toString(),"Monitor Thread start");
+            Log.wtf(this.getClass().toString(),"Monitor Thread start");
             String nameForStH;
             String nameForStMin;
             String nameForEtH;
             String nameForEtMin;
             Calendar tempTime;
+
             long endTime;
             long timeDiff;
-            boolean createdNotice = false;
             while (!Thread.currentThread().isInterrupted()) {
                 if (noOfEvent != 0) {
                     for (int i = 0; i < noOfEvent; i++) {
-                        MonitorRecorder monitorRecorder = MonitorRecorder.getInstance(samplesLength[i],patternLists.get(i));
-                        monitorRecorder.prepare();
+                        Log.wtf(this.getClass().toString(),"Event" + i );
+                        MonitorRecorder monitorRecorder = MonitorRecorder.getInstance();
+
+                        monitorRecorder.setUpForLCS(samplesLength[i],patternLists.get(i));
+                        Log.wtf(this.getClass().toString(),monitorRecorder.toString());
+                       monitorRecorder.prepare();
                         //name for sthr,stmin,ethr,etmin
 
                         nameForStH = "E" + i + "STH";
@@ -81,30 +83,50 @@ public class MainPage extends ActionBarActivity {
                         if (timeDiff > 0) {
                             try {
                                 Thread.sleep(timeDiff);
+                                Log.wtf(this.getClass().toString(),"Thread put into sleep");
                             } catch (InterruptedException e) {
                                 Log.wtf(this.getClass().toString() + " InterruptedException", e.toString());
+                                monitorRecorder.release();
+                                monitorRecorder.reset();
+                            }
+                            catch(Exception e)
+                            {
+                                Log.wtf(this.getClass().toString(),e.toString());
                             }
                         }
 
                         //the endtime for the recording
-                        while (endTime > System.currentTimeMillis()) {
-                            createdNotice = false;
-                            if (MonitorRecorder.State.INITIALIZING == monitorRecorder.getState()) {
+                        while (endTime > System.currentTimeMillis() && !Thread.currentThread().isInterrupted()) {
+                            if(MonitorRecorder.State.READY == monitorRecorder.getState()){
                                 monitorRecorder.start();
+                                Log.wtf(this.getClass().toString(),"monitor recorder started");
+                            }
+                            else if (MonitorRecorder.State.INITIALIZING == monitorRecorder.getState()) {
+                                monitorRecorder.prepare();
+                                Log.wtf(this.getClass().toString(),"monitor recorder prepared");
                             } else if (MonitorRecorder.State.ERROR == monitorRecorder.getState()) {
                                 monitorRecorder.release();
-                                monitorRecorder = MonitorRecorder.getInstance(samplesLength[i],patternLists.get(i));
-                            }
+                               // monitorRecorder.setUpForLCS(samplesLength[i],patternLists.get(i));
+                                Log.wtf(this.getClass().toString(),"monitor recorder released");
+                           }
                         }
                         if (MonitorRecorder.State.RECORDING == monitorRecorder.getState()) {
-                            monitorRecorder.stop();
-                            monitorRecorder.reset();
+                           monitorRecorder.stop();
+                           monitorRecorder.reset();
+                            Log.wtf(this.getClass().toString(),"monitor recorder stop and resetted");
                         }
-                        if (!monitorRecorder.getFoundPattern() && !createdNotice) {
+                        if (!monitorRecorder.getFoundPattern()) {
                             createNotice(i);
-                            createdNotice = true;
+                            Log.wtf(this.getClass().toString(),"Notice created");
+                       }
+                        else
+                        {
+                            Log.wtf(this.getClass().toString(),"Pattern found");
+                            monitorRecorder.resetFoundPattern();
                         }
+                        monitorRecorder.release();
                     }
+
                 }
             }
         }
@@ -177,7 +199,10 @@ public class MainPage extends ActionBarActivity {
             String fileName = directory + "/" + FileNameGenerator.getPatternName(i);
             Log.wtf("",fileName);
             FileIOUtils.writeDataToFile(new File(fileName), result);
+            Log.wtf("Target Pattern",result+"");
         }
+        initialPattern();
+        intialSampleLengths();
     }
 
     private void initialization() {
@@ -204,8 +229,6 @@ public class MainPage extends ActionBarActivity {
         intialSampleLengths();
         monitorThread = new Thread(monitorLogic);
         updateMonitorText();
-        if(monitorOn)
-            monitorThread.start();
 
     }
 
@@ -222,7 +245,7 @@ public class MainPage extends ActionBarActivity {
         patternLists = new ArrayList<ArrayList<Integer>>();
         for (int i = 0; i < noOfEvent; i++) {
             String fileNmae = FileNameGenerator.getDirectory() +"/"+ FileNameGenerator.getPatternName(i);
-            ArrayList<Integer> pattern = FileIOUtils.readIntFromRandomAccessFile(fileNmae);
+            ArrayList<Integer> pattern = FileIOUtils.readStringToIntList(fileNmae);
             patternLists.add(pattern);
         }
 
@@ -255,6 +278,8 @@ public class MainPage extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
         initialization();
+        if(monitorOn)
+            monitorThread.start();
 
     }
 

@@ -12,7 +12,7 @@ import com.musicg.wave.Wave;
 
 public class TestAlgo {
 	public static void main(String args[]) {
-		int dateNo = 408;
+		int dateNo = 409;
 		int numberOfFile = 5;
 		ArrayList<List<Integer>> freqLists = new ArrayList<List<Integer>>();
 		String directory = "/Users/lohris/lohrisdtwmfccs/testingworkplace/TestingDTWMCSS/src/dataFile/"

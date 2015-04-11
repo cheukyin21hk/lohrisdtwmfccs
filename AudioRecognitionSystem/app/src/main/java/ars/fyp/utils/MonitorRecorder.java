@@ -5,6 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ public class MonitorRecorder {
                 return;
             }
             int numOfBytes = audioRecorder.read(buffer, 0, buffer.length); // read audio data to bufferˆ
+            Log.wtf(this.getClass().toString(),"Keep reading");
             soundAnalysis();
         }
 
@@ -34,18 +36,23 @@ public class MonitorRecorder {
         }
     };
 
-    public MonitorRecorder(int audioSource, int sampleRate, int channelConfig, int audioFormat, int sampleLenght, List<Integer> targetPattern) {
+    public void setUpForLCS(int sampleLength,List<Integer> targetPattern)
+    {
+        this.sampleLength = sampleLength;
+        this.targetPattern = targetPattern;
+    }
+
+
+    public MonitorRecorder(int audioSource, int sampleRate, int channelConfig, int audioFormat) {
         try {
-            this.targetPattern = targetPattern;
-            this.sampleLength = sampleLenght;
             mBitsPersample = 16;
             nChannels = 1;
             mAudioSource = audioSource;
             sRate = sampleRate;
             aFormat = audioFormat;
             foundPattern = true;
-            mPeriodInFrames = sampleRate * TIMER_INTERVAL / 1000;        //?
-            mBufferSize = mPeriodInFrames * 2 * nChannels * mBitsPersample / 8;        //?
+            mPeriodInFrames = sampleRate * TIMER_INTERVAL / 1000;
+            mBufferSize = mPeriodInFrames * 2 * nChannels * mBitsPersample / 8;
             if (mBufferSize < AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)) {
                 // Check to make sure buffer size is not smaller than the smallest allowed one
                 mBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
@@ -56,29 +63,30 @@ public class MonitorRecorder {
 
             audioRecorder = new AudioRecord(audioSource, sampleRate, channelConfig, audioFormat, mBufferSize);
             if (audioRecorder.getState() != AudioRecord.STATE_INITIALIZED) {
-                throw new Exception("AudioRecord initialization failed");
+                audioRecorder.release();
+                throw new Exception("AudioRecord initialization failed from Constructor");
             }
             audioRecorder.setRecordPositionUpdateListener(updateListener);
             audioRecorder.setPositionNotificationPeriod(mPeriodInFrames);
             state = State.INITIALIZING;
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                Log.e(MonitorRecorder.class.getName(), e.getMessage());
+                Log.wtf(MonitorRecorder.class.getName(), e.getMessage());
             } else {
-                Log.e(MonitorRecorder.class.getName(), "Unknown error occured while initializing recording");
+                Log.wtf(MonitorRecorder.class.getName(), "Unknown error occured while initializing recording");
             }
             state = State.ERROR;
         }
     }
 
-    public static MonitorRecorder getInstance(int sampleLength, List<Integer> targetPattern) {
+    public static MonitorRecorder getInstance() {
         MonitorRecorder result = null;
         int i = 0;
         do {
             result = new MonitorRecorder(MediaRecorder.AudioSource.MIC,
                     sampleRates[i],
                     AudioFormat.CHANNEL_IN_MONO,
-                    AudioFormat.ENCODING_PCM_16BIT, sampleLength, targetPattern);
+                    AudioFormat.ENCODING_PCM_16BIT);
         }
         while ((++i < sampleRates.length) & !(result.getState() == MonitorRecorder.State.INITIALIZING));
         return result;
@@ -96,19 +104,19 @@ public class MonitorRecorder {
                     buffer = new short[mPeriodInFrames * nChannels];
                     state = State.READY;
                 } else {
-                    Log.e(MonitorRecorder.class.getName(), "prepare() method called on uninitialized recorder");
+                    Log.wtf(MonitorRecorder.class.getName(), "prepare() method called on uninitialized recorder");
                     state = State.ERROR;
                 }
             } else {
-                Log.e(MonitorRecorder.class.getName(), "prepare() method called on illegal state");
+                Log.wtf(MonitorRecorder.class.getName(), "prepare() method called on illegal state");
                 release();
                 state = State.ERROR;
             }
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                Log.e(MonitorRecorder.class.getName(), e.getMessage());
+                Log.wtf(MonitorRecorder.class.getName(), e.getMessage());
             } else {
-                Log.e(MonitorRecorder.class.getName(), "Unknown error occured in prepare()");
+                Log.wtf(MonitorRecorder.class.getName(), "Unknown error occured in prepare()");
             }
             state = State.ERROR;
         }
@@ -123,6 +131,7 @@ public class MonitorRecorder {
         }
 
         if (audioRecorder != null) {
+            Log.wtf(this.getClass().toString(),audioRecorder.toString());
             audioRecorder.release();
         }
     }
@@ -133,14 +142,16 @@ public class MonitorRecorder {
                 release();
                 audioRecorder = new AudioRecord(mAudioSource, sRate, nChannels, aFormat, mBufferSize);
                 if (audioRecorder.getState() != AudioRecord.STATE_INITIALIZED) {
+                    audioRecorder.release();
                     throw new Exception("AudioRecord initialization failed");
                 }
+
                 audioRecorder.setRecordPositionUpdateListener(updateListener);
                 audioRecorder.setPositionNotificationPeriod(mPeriodInFrames);
                 state = State.INITIALIZING;
             }
         } catch (Exception e) {
-            Log.e(MonitorRecorder.class.getName(), e.getMessage());
+            Log.wtf(MonitorRecorder.class.getName(), e.getMessage());
             state = State.ERROR;
         }
     }
@@ -149,10 +160,11 @@ public class MonitorRecorder {
         if (state == State.READY) {
             audioRecorder.startRecording();
             audioRecorder.read(buffer, 0, buffer.length);
+            bufferedData = new ArrayList<Integer>();
             foundPattern = false;
             state = State.RECORDING;
         } else {
-            Log.e(MonitorRecorder.class.getName(), "start() called on illegal state");
+            Log.wtf(MonitorRecorder.class.getName(), "start() called on illegal state");
             state = State.ERROR;
         }
     }
@@ -162,7 +174,7 @@ public class MonitorRecorder {
             audioRecorder.stop();
             state = State.STOPPED;
         } else {
-            Log.e(MonitorRecorder.class.getName(), "stop() called on illegal state");
+            Log.wtf(MonitorRecorder.class.getName(), "stop() called on illegal state");
             state = State.ERROR;
         }
     }
@@ -170,7 +182,7 @@ public class MonitorRecorder {
     public void soundAnalysis() {
         int avgAmp = 0;
         int crossingZero = 0;
-
+        Log.wtf(this.getClass().toString(),"keep comparing");
         for (int i = 0; i < buffer.length - 1; i++) {
             if (buffer[i] < 0 && buffer[i + 1] >= 0)
                 crossingZero++;
@@ -189,16 +201,24 @@ public class MonitorRecorder {
         } else {
             bufferedData.add(avgAmp);
             bufferedData.add(crossingZero);
-            bufferedData = bufferedData.subList(2, bufferedData.size());
+            List<Integer> tmp;
+            tmp = bufferedData.subList(2, bufferedData.size());
+            bufferedData = new ArrayList<Integer>();
+            bufferedData.addAll(tmp);
         }
+        Log.wtf(this.getClass().toString(),targetPattern+"");
         lcsBuffer = LCSHelper.findLCS(LCSHelper.getKeyFeature(bufferedData), targetPattern);
         if (lcsBuffer.size() == targetPattern.size()) {
             foundPattern = true;
-            audioRecorder.stop();
+            Log.wtf("result- true",foundPattern+"");
+            release();
         }
-
-
     }
+    public void resetFoundPattern()
+    {
+        this.foundPattern = false;
+    }
+
 
     public boolean getFoundPattern() {
         return foundPattern;

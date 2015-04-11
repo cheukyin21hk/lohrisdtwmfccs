@@ -7,11 +7,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+
+import ars.fyp.utils.FileIOUtils;
+import ars.fyp.utils.FileNameGenerator;
 
 
 public class Configuration extends ActionBarActivity {
@@ -33,6 +42,13 @@ public class Configuration extends ActionBarActivity {
                                 public void onClick(DialogInterface dialog, int id) {
                                     editor.clear();
                                     editor.commit();
+                                    try {
+                                        FileUtils.deleteDirectory(new File(FileNameGenerator.getDirectory()));
+                                        File dir = new File(FileNameGenerator.getDirectory());
+                                        dir.mkdir();
+                                    } catch (IOException e) {
+                                        Log.e(this.getClass().toString(), e.toString());
+                                    }
                                     Toast.makeText(getApplicationContext(), "All data have been deleted", Toast.LENGTH_SHORT).show();
                                 }
                             }).setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -42,7 +58,6 @@ public class Configuration extends ActionBarActivity {
                     });
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
-
                     break;
                 }
                 case R.id.cHomeBtn:
