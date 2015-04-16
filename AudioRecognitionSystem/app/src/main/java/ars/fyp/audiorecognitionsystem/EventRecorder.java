@@ -109,7 +109,6 @@ public class EventRecorder extends ActionBarActivity {
                 }
                 case R.id.startRcBtn: {
                     if (sampleNumber < 5) {
-
                             if (AudioPatterRecorder.State.INITIALIZING == recorder.getState()) {
                                 recordFilePath = FileNameGenerator.getDirectory() + "/" + FileNameGenerator.getSamepleName(eventNumber, sampleNumber);
                                 recorder.setOutputFile(recordFilePath);

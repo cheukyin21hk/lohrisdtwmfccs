@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -39,10 +40,10 @@ public class MainPage extends ActionBarActivity {
     private ArrayList<ArrayList<Integer>> patternLists;
     private Thread monitorThread;
     private Boolean monitorOn = false;
+    private TextView status;
 
     private Runnable monitorLogic = new Runnable() {
         public void run() {
-            Log.wtf(this.getClass().toString(),"Monitor Thread start");
             String nameForStH;
             String nameForStMin;
             String nameForEtH;
@@ -60,8 +61,8 @@ public class MainPage extends ActionBarActivity {
                         monitorRecorder.setUpForLCS(samplesLength[i],patternLists.get(i));
                         Log.wtf(this.getClass().toString(),monitorRecorder.toString());
                        monitorRecorder.prepare();
-                        //name for sthr,stmin,ethr,etmin
 
+                        //name for sthr,stmin,ethr,etmin
                         nameForStH = "E" + i + "STH";
                         nameForStMin = "E" + i + "STM";
                         nameForEtH = "E" + i + "ETH";
@@ -70,24 +71,26 @@ public class MainPage extends ActionBarActivity {
                         tempTime = Calendar.getInstance();
                         tempTime.set(Calendar.HOUR_OF_DAY,sharedPreferences.getInt(nameForEtH,0));
                         tempTime.set(Calendar.MINUTE,sharedPreferences.getInt(nameForEtMin,0));
+                        tempTime.set(Calendar.SECOND,0);
                         endTime = tempTime.getTimeInMillis();
+
                         //variable to check the time for sleep this thread
-
-
                         tempTime.set(Calendar.HOUR_OF_DAY, sharedPreferences.getInt(nameForStH, 0));
                         tempTime.set(Calendar.MINUTE, sharedPreferences.getInt(nameForStMin, 0));
-
+                        tempTime.set(Calendar.SECOND, 0);
                         timeDiff = tempTime.getTimeInMillis() - System.currentTimeMillis();
 
 
                         if (timeDiff > 0) {
                             try {
                                 Thread.sleep(timeDiff);
+                                status.setText("Monitor thread status: sleep "+timeDiff / 1000  +" seconds "+ "before it starts." );
                                 Log.wtf(this.getClass().toString(),"Thread put into sleep");
                             } catch (InterruptedException e) {
                                 Log.wtf(this.getClass().toString() + " InterruptedException", e.toString());
                                 monitorRecorder.release();
                                 monitorRecorder.reset();
+                                Log.wtf(this.getClass().toString(),"Monitor Released and reset from pre - monitoring loop");
                             }
                             catch(Exception e)
                             {
@@ -106,6 +109,7 @@ public class MainPage extends ActionBarActivity {
                                 Log.wtf(this.getClass().toString(),"monitor recorder prepared");
                             } else if (MonitorRecorder.State.ERROR == monitorRecorder.getState()) {
                                 monitorRecorder.release();
+                                Log.wtf(this.getClass().toString(),"Monitor Released from monitoring loop");
                                // monitorRecorder.setUpForLCS(samplesLength[i],patternLists.get(i));
                                 Log.wtf(this.getClass().toString(),"monitor recorder released");
                            }
@@ -117,6 +121,7 @@ public class MainPage extends ActionBarActivity {
                         }
                         if (!monitorRecorder.getFoundPattern()) {
                             createNotice(i);
+                            status.setText("Monitor thread status : created notice");
                             Log.wtf(this.getClass().toString(),"Notice created");
                        }
                         else
@@ -125,10 +130,12 @@ public class MainPage extends ActionBarActivity {
                             monitorRecorder.resetFoundPattern();
                         }
                         monitorRecorder.release();
+
                     }
 
                 }
             }
+            status.setText("Monitor status : stopped");
         }
     };
 
@@ -160,12 +167,14 @@ public class MainPage extends ActionBarActivity {
                     updateMonitorText();
                     if(monitorOn)
                     {
+                            status.setText("Monitor status : monitor is active");
                             monitorThread = new Thread(monitorLogic);
                             monitorThread.start();
                         Log.i(this.getClass().toString(),"the monitor thread have been started");
                     }
                     else
                     {
+                            status.setText("Monitor status : monitor is inactive");
                             monitorThread.interrupt();
                         Log.i(this.getClass().toString(),"the monitor thread have been terminated");
                     }
@@ -211,6 +220,7 @@ public class MainPage extends ActionBarActivity {
         resetBtn = (Button) findViewById(R.id.resetBtn);
         patternGenBtn = (Button) findViewById(R.id.patternBtn);
         monitorBtn = (Button) findViewById(R.id.monitorBtn);
+        status = (TextView) findViewById(R.id.MPstatus);
         resetBtn.setVisibility(View.GONE);
 
         patternGenBtn.setOnClickListener(btnListener);
@@ -305,6 +315,7 @@ public class MainPage extends ActionBarActivity {
     }
 
     private void createNotice(int eventId) {
+        Log.wtf(this.getClass().toString(),"notice craeted");
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext())
                         .setSmallIcon(R.mipmap.ic_launcher)
